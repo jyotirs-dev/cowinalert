@@ -1,0 +1,19 @@
+  .spinner-body{
+    display:grid;
+    place-items: center;
+    background-color: #000000;
+    color:#FFFFF2;
+  }
+  .loader-circle{
+      width: 80px;
+      height: 80px;
+      border: 15px solid;
+      border-color: #E6AF2E #1B998B;
+      border-radius: 50%;
+      animation: spin 1.5s infinite;
+  }
+  @keyframes spin{
+      to{
+          transform: rotate(360deg);
+      }
+  }

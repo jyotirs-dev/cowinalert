@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Spinner from './Spinner';
 import './App.css';
 
 class App extends React.Component {
@@ -51,9 +52,9 @@ class App extends React.Component {
         .then( (slots)=> {
             const centers = slots.data.centers;
             const sessions = centers.map(centre=>centre.sessions).flat();
-            console.log("test",sessions);
+            // console.log("test",sessions);
             let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
-            console.log("test",validSlots);
+            console.log("checking",validSlots);
             // validSlots.push(0);
             if(validSlots.length > 0) {
                 this.updateState();
@@ -76,6 +77,7 @@ class App extends React.Component {
     <div>
     <h1>No Slots Available</h1>
     <p>Keep Checking Screen Every Minute</p>
+    <Spinner/>
     <p><small>We will alert you</small></p>
     </div>
 
