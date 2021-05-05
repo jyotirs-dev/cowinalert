@@ -93,7 +93,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          Mandsaur Cowin 18+ availability Check
+          Mandsaur city Cowin 18+ vaccination slots availability check.
         </header>
         <div className="App-body">
           {!this.state.error && (this.state.available? slotsAvailable : slotsUnAvailable)}
