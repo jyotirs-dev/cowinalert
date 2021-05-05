@@ -1,0 +1,38 @@
+.card-body {
+    font-family: "Orelega One", cursive;
+    padding: 4.5rem;
+    margin: auto;
+    background: #2bc0e4; /* fallback for old browsers */
+    background: -webkit-linear-gradient(
+      to right,
+      #eaecc6,
+      #2bc0e4
+    ); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(
+      to right,
+      #1B998B,
+      #2bc0e4
+    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+  h1 {
+    font-family: "Great Vibes", cursive;
+  }
+  .card {
+    width: 30%;
+    height: auto;
+    padding: 5rem;
+    border-radius: 1rem;
+    background: #E6AF2E;
+    color: #002521;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    margin: auto;
+    z-index: 10;
+  }
+  .card-title {
+    margin: auto;
+  }
+  a {
+    text-decoration: none;
+  }
+  

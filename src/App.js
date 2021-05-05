@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import Spinner from './Spinner';
+import ErrorCard from './ErrorCard';
 import './App.css';
 
 class App extends React.Component {
@@ -8,7 +9,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       apiData: "No Slots Available",
-      available:false     
+      available:false,
+      error:false     
   }
   }
 
@@ -27,6 +29,12 @@ class App extends React.Component {
     this.setState(state => ({
       apiData: "Slots Now Available",
       available:true
+    }));
+  }
+
+  updateErrorState = (err)=>{
+    this.setState(state => ({
+      error: true,
     }));
   }
 
@@ -64,6 +72,7 @@ class App extends React.Component {
         })
         .catch(error=>{
             console.log(error);
+            this.updateErrorState(error);
         });
   }
   render(){
@@ -87,7 +96,8 @@ class App extends React.Component {
           Mandsaur Cowin 18+ availability Check
         </header>
         <div className="App-body">
-          {this.state.available? slotsAvailable : slotsUnAvailable}
+          {!this.state.error && (this.state.available? slotsAvailable : slotsUnAvailable)}
+          {this.state.error && <ErrorCard/>}
         </div>
       </div>
     );
