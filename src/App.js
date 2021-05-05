@@ -5,42 +5,88 @@ import './App.css';
 class App extends React.Component {
   constructor(props){
     super(props);
-    this.state = {apiData: null}
+    this.state = {
+      apiData: "No Slots Available",
+      available:false     
+  }
   }
 
   componentDidMount(){
-    this.getSlotsForDate();
+    const DateVar = this.getTomorrowDate();
+    console.log("test1",DateVar);
+    this.getSlotsForDate(DateVar);
+    this.interval = setInterval(() => this.getSlotsForDate(DateVar), 60 * 1000);
   }
 
-   getSlotsForDate = (DATE)=> {
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  updateState = ()=>{
+    this.setState(state => ({
+      apiData: "Slots Now Available",
+      available:true
+    }));
+  }
+
+  getTomorrowDate = ()=>{
+    let currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+    let day = currentDate.getDate()
+    let month = currentDate.getMonth() + 1
+    let year = currentDate.getFullYear()
+    const tomorrowDate = day + "/" + month + "/" + year;
+    return tomorrowDate;
+  }
+
+  getSlotsForDate = (DATE)=> {
     let config = {
         method: 'get',
-        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=319&date=06-05-2021',
+        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=319&date='+DATE,
         headers: {
             'accept': 'application/json'
         }
     };
 
     axios(config)
-        .then(function (slots) {
+        .then( (slots)=> {
             const centers = slots.data.centers;
             const sessions = centers.map(centre=>centre.sessions).flat();
-            const validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
-            console.log("test",validSlots)
+            console.log("test",sessions);
+            let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
+            console.log("test",validSlots);
+            // validSlots.push(0);
             if(validSlots.length > 0) {
+                this.updateState();
                 alert("Slots Available");
+                clearInterval(this.interval);
             }
         })
-        .catch(function (error) {
+        .catch(error=>{
             console.log(error);
         });
-}
+  }
   render(){
+    const slotsAvailable = 
+    <div>
+    <h1>Slots Now Available</h1>
+    <p>Visit <a className ="App-link" href="https://selfregistration.cowin.gov.in">https://selfregistration.cowin.gov.in</a></p>
+    </div>
+
+    const slotsUnAvailable = 
+    <div>
+    <h1>No Slots Available</h1>
+    <p>Keep Checking Screen Every Minute</p>
+    <p><small>We will alert you</small></p>
+    </div>
+
     return (
       <div className="App">
         <header className="App-header">
-          {this.state.apiData}
+          Mandsaur Cowin 18+ availability Check
         </header>
+        <div className="App-body">
+          {this.state.available? slotsAvailable : slotsUnAvailable}
+        </div>
       </div>
     );
   }
