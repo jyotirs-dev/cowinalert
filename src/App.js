@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import Spinner from './Spinner';
 import ErrorCard from './ErrorCard';
+import Telegram from './Telegram';
 import './App.css';
 
 class App extends React.Component {
@@ -97,10 +98,10 @@ class App extends React.Component {
             const centers = slots.data.centers;
             const sessions = centers.map(centre=>centre.sessions).flat();
             // console.log("test",sessions);
-            let validSlots = sessions.filter(session=> session.min_age_limit===45 && session.available_capacity>0)
+            let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
             console.log("checking",validSlots);
-            let time = new Date();
-            console.log("Time Spent",time.getHours() + ":" + time.getMinutes());
+            // let time = new Date();
+            // console.log("Time Spent",time.getHours() + ":" + time.getMinutes());
             // validSlots.push(0);
             
             if(validSlots.length > 0) {
@@ -115,6 +116,12 @@ class App extends React.Component {
             this.updateErrorState(error);
         });
   }
+
+  clickHandle = ()=>{
+    console.log("clicked"); 
+    window.open("https://telegram.me/joinchat/8ryMJj9LN6k0OTg9",'_self' );
+  }
+
   render(){
     const slotsAvailable = 
     <div>
@@ -127,7 +134,7 @@ class App extends React.Component {
     <h1>No Slots Available</h1>
     <p>Keep Checking Screen Every Minute</p>
     <Spinner/>
-    <p><small>We will alert you</small></p>
+    <p><small>We will alert you, Join 👇 our Telegram Channel</small></p>
     </div>
 
     return (
@@ -138,6 +145,7 @@ class App extends React.Component {
         <div className="App-body">
           {!this.state.error && (this.state.available? slotsAvailable : slotsUnAvailable)}
           {this.state.error && <ErrorCard/>}
+          {!this.state.error && <Telegram onclick={()=> this.clickHandle}/>}
         </div>
         <footer className="App-footer">
           <div className="footer-right">Made with ❤️ in India - <a href="https://github.com/jyotirs-dev">By Jyotiraditya Singh Solanki</a></div>
