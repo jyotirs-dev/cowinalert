@@ -99,6 +99,9 @@ class App extends React.Component {
           {!this.state.error && (this.state.available? slotsAvailable : slotsUnAvailable)}
           {this.state.error && <ErrorCard/>}
         </div>
+        <footer className="App-footer">
+          <div className="footer-right">Made with ❤️ in India - <a href="https://github.com/jyotirs-dev">By Jyotir</a></div>
+        </footer>
       </div>
     );
   }
