@@ -25,6 +25,32 @@ class App extends React.Component {
     clearInterval(this.interval);
   }
 
+  sendTelegram = (centers,validSlots)=>{
+    // const getCenters = centers.filter(center=> 
+    //   { 
+    //       let sessions = center.sessions.map(session=> session);
+    //       return sessions.some(session=> {
+    //           return validSlots.find(slot=> slot.session_id === session.session_id)
+    //       })
+          
+    //   }
+    // )
+    // const getMsg = `Vaccines for 18-44 ${getCenters}`
+    // console.log("center test",getCenters)
+    let config = {
+      method: 'get',
+      url: process.env.REACT_APP_SEND_MSG
+  };
+
+  axios(config)
+      .then( (res)=> {
+        console.log(res);
+      })
+      .catch(error=>{
+          console.log(error);
+      });
+  }
+
   updateState = ()=>{
     this.setState(state => ({
       apiData: "Slots Now Available",
@@ -64,7 +90,9 @@ class App extends React.Component {
             let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
             console.log("checking",validSlots);
             // validSlots.push(0);
+            
             if(validSlots.length > 0) {
+                this.sendTelegram(centers,validSlots);
                 this.updateState();
                 alert("Slots Available");
                 clearInterval(this.interval);
