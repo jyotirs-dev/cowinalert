@@ -45,6 +45,7 @@ class App extends React.Component {
   axios(config)
       .then( (res)=> {
         console.log(res);
+        alert("Slots Available");
       })
       .catch(error=>{
           console.log(error);
@@ -94,7 +95,7 @@ class App extends React.Component {
             if(validSlots.length > 0) {
                 this.sendTelegram(centers,validSlots);
                 this.updateState();
-                alert("Slots Available");
+                // alert("Slots Available");
                 clearInterval(this.interval);
             }
         })
