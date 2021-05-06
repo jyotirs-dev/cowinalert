@@ -136,9 +136,11 @@ class App extends React.Component {
     <Spinner/>
     <p><small>We will alert you, Join 👇 our Telegram Channel</small></p>
     </div>
-
+    // console.log(window.innerHeight);
+    const viewHeight = window.innerHeight;
     return (
-      <div className="App">
+      
+      <div style={{height:viewHeight}} className="App">
         <header className="App-header">
           Mandsaur city Cowin 18+ vaccination slots availability check.
         </header>
