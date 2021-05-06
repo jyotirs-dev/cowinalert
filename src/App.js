@@ -3,9 +3,6 @@ import axios from 'axios';
 import Spinner from './Spinner';
 import ErrorCard from './ErrorCard';
 import Telegram from './Telegram';
-import {
-  Redirect
-} from "react-router-dom";
 import './App.css';
 
 class App extends React.Component {
