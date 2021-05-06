@@ -26,30 +26,39 @@ class App extends React.Component {
   }
 
   sendTelegram = (centers,validSlots)=>{
-    // const getCenters = centers.filter(center=> 
-    //   { 
-    //       let sessions = center.sessions.map(session=> session);
-    //       return sessions.some(session=> {
-    //           return validSlots.find(slot=> slot.session_id === session.session_id)
-    //       })
+    const getCenters = centers.filter(center=> 
+      { 
+          let sessions = center.sessions.map(session=> session);
+          return sessions.some(session=> {
+              return validSlots.find(slot=> slot.session_id === session.session_id)
+          })
           
-    //   }
-    // )
-    // const getMsg = `Vaccines for 18-44 ${getCenters}`
-    // console.log("center test",getCenters)
-    let config = {
-      method: 'get',
-      url: process.env.REACT_APP_SEND_MSG
-  };
+      }
+    )
 
-  axios(config)
+    const getMsg = getCenters.map(hospital=>
+      { 
+        let sessions = hospital.sessions.map(session=> session);
+        let checkSlotsAndDate = sessions.map(session=> `${session.available_capacity} Vaccines available for 18-44 at ${hospital.name} for date ${session.date}`)
+        return checkSlotsAndDate;
+      } 
+    )
+    const msgString =  getMsg.flat();
+    // console.log("center test",msgString);
+    const helpLink = (`%0AVisit https://selfregistration.cowin.gov.in`);
+    for(let i = 0; i<msgString.length; i++){
+      let config = {
+        method: 'get',
+        url: process.env.REACT_APP_SEND_MSG + msgString[i] + helpLink
+      };
+      axios(config)
       .then( (res)=> {
         console.log(res);
-        alert("Slots Available");
       })
       .catch(error=>{
           console.log(error);
       });
+    }
   }
 
   updateState = ()=>{
@@ -88,8 +97,10 @@ class App extends React.Component {
             const centers = slots.data.centers;
             const sessions = centers.map(centre=>centre.sessions).flat();
             // console.log("test",sessions);
-            let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
+            let validSlots = sessions.filter(session=> session.min_age_limit===45 && session.available_capacity>0)
             console.log("checking",validSlots);
+            let time = new Date();
+            console.log("Time Spent",time.getHours() + ":" + time.getMinutes());
             // validSlots.push(0);
             
             if(validSlots.length > 0) {
@@ -129,7 +140,7 @@ class App extends React.Component {
           {this.state.error && <ErrorCard/>}
         </div>
         <footer className="App-footer">
-          <div className="footer-right">Made with ❤️ in India - <a href="https://github.com/jyotirs-dev">By Jyotir</a></div>
+          <div className="footer-right">Made with ❤️ in India - <a href="https://github.com/jyotirs-dev">By Jyotiraditya Singh Solanki</a></div>
         </footer>
       </div>
     );
