@@ -97,7 +97,7 @@ class App extends React.Component {
             const centers = slots.data.centers;
             const sessions = centers.map(centre=>centre.sessions).flat();
             // console.log("test",sessions);
-            let validSlots = sessions.filter(session=> session.min_age_limit===45 && session.available_capacity>0)
+            let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
             console.log("checking",validSlots);
             let time = new Date();
             console.log("Time Spent",time.getHours() + ":" + time.getMinutes());
