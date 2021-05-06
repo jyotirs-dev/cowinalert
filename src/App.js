@@ -45,6 +45,7 @@ class App extends React.Component {
   axios(config)
       .then( (res)=> {
         console.log(res);
+        alert("Slots Available");
       })
       .catch(error=>{
           console.log(error);
