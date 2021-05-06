@@ -89,12 +89,12 @@ class App extends React.Component {
             // console.log("test",sessions);
             let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
             console.log("checking",validSlots);
-            // validSlots.push(0);
+            validSlots.push(0);
             
             if(validSlots.length > 0) {
                 this.sendTelegram(centers,validSlots);
                 this.updateState();
-                alert("Slots Available");
+                // alert("Slots Available");
                 clearInterval(this.interval);
             }
         })
