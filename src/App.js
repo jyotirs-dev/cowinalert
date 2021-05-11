@@ -44,7 +44,8 @@ class App extends React.Component {
   updateState = (arrmsg)=>{
     this.setState(state => ({
       apiData: arrmsg,
-      available:true
+      available:true,
+      error: false,
     }));
   }
 
@@ -52,6 +53,7 @@ class App extends React.Component {
     this.setState(state => ({
       error: true,
     }));
+    // setTimeout(() => window.location.reload(), 5 * 60 * 1000);
   }
 
   getTomorrowDate = ()=>{
@@ -66,7 +68,7 @@ class App extends React.Component {
   getSlotsForDate = async (DATE)=> {
     let config = {
         method: 'get',
-        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=329&date='+DATE,
+        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=319&date='+DATE,
         headers: {
             'accept': 'application/json'
         }
@@ -104,8 +106,7 @@ class App extends React.Component {
                 this.sendTelegram(arrmsg);
                 this.updateState(arrmsg);
                 clearInterval(this.interval);
-                setTimeout(() => window.location.reload(), 5 * 60 * 1000);
-                
+                setTimeout(() => window.location.reload(), 5 * 60 * 1000);  
             }
         })
         .catch(error=>{
