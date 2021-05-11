@@ -9,7 +9,7 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      apiData: "No Slots Available",
+      apiData: null,
       available:false,
       error:false     
   }
@@ -26,46 +26,26 @@ class App extends React.Component {
     clearInterval(this.interval);
   }
 
-  sendTelegram = (centers,validSlots)=>{
-    const getCenters = centers.filter(center=> 
-      { 
-          let sessions = center.sessions.map(session=> session);
-          return sessions.some(session=> {
-              return validSlots.find(slot=> slot.session_id === session.session_id)
-          })
-          
-      }
-    )
-
-    const getMsg = getCenters.map(hospital=>
-      { 
-        let sessions = hospital.sessions.map(session=> session);
-        let checkSlotsAndDate = sessions.map(session=> `${session.available_capacity} Vaccines available for 18-44 at ${hospital.name} for date ${session.date}`)
-        return checkSlotsAndDate;
-      } 
-    )
-    const msgString =  getMsg.flat();
-    // console.log("center test",msgString);
+  sendTelegram = async (strarr)=>{
+  
     const helpLink = (`%0AVisit https://selfregistration.cowin.gov.in`);
-    for(let i = 0; i<msgString.length; i++){
+    const sendMessageNew = (i,params)=>{
+      setTimeout(()=> { return axios(params); }, 2000*i);
+    }
+    for(let i=0; i< strarr.length;i++) {
       let config = {
         method: 'get',
-        url: process.env.REACT_APP_SEND_MSG + msgString[i] + helpLink
+        url: process.env.REACT_APP_SEND_MSG + strarr[i] + helpLink
       };
-      axios(config)
-      .then( (res)=> {
-        console.log(res);
-      })
-      .catch(error=>{
-          console.log(error);
-      });
-    }
+      sendMessageNew(i,config)
+  }
   }
 
-  updateState = ()=>{
+  updateState = (arrmsg)=>{
     this.setState(state => ({
-      apiData: "Slots Now Available",
-      available:true
+      apiData: arrmsg,
+      available:true,
+      error: false,
     }));
   }
 
@@ -73,6 +53,7 @@ class App extends React.Component {
     this.setState(state => ({
       error: true,
     }));
+    // setTimeout(() => window.location.reload(), 5 * 60 * 1000);
   }
 
   getTomorrowDate = ()=>{
@@ -84,7 +65,7 @@ class App extends React.Component {
     return tomorrowDate;
   }
 
-  getSlotsForDate = (DATE)=> {
+  getSlotsForDate = async (DATE)=> {
     let config = {
         method: 'get',
         url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=319&date='+DATE,
@@ -93,22 +74,39 @@ class App extends React.Component {
         }
     };
 
-    axios(config)
+    await axios(config)
         .then( (slots)=> {
-            const centers = slots.data.centers;
-            const sessions = centers.map(centre=>centre.sessions).flat();
-            // console.log("test",sessions);
-            let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
-            console.log("checking",validSlots);
-            // let time = new Date();
-            // console.log("Time Spent",time.getHours() + ":" + time.getMinutes());
-            // validSlots.push(0);
-            
+          const arrmsg = [];
+          const centers = slots.data.centers;
+            for(var i in centers){
+              var centerData = centers[i];
+              var name =  centerData["name"];
+              var pincode = centerData["pincode"];
+              for(var j in centerData["sessions"]){
+                  var session = centerData["sessions"][j];
+                  var avail = session["available_capacity"];
+                  var date  = session["date"];
+                  var age = session["min_age_limit"];
+                  // var slot = session["slots"][0];
+                  // var sessionId = session["session_id"];
+                  
+                  if(age === 18 && avail > 0){
+                      console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
+                      let strMsg = `${avail} vaccine available for age ${age}-44 at ${name} on ${date}
+                      PinCode: ${pincode}`;
+                      arrmsg.push(strMsg);
+                    }
+                }
+              }
+
+          const sessions = centers.map(centre=>centre.sessions).flat();
+          let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
+          console.log("checking",validSlots);
             if(validSlots.length > 0) {
-                this.sendTelegram(centers,validSlots);
-                this.updateState();
-                // alert("Slots Available");
+                this.sendTelegram(arrmsg);
+                this.updateState(arrmsg);
                 clearInterval(this.interval);
+                setTimeout(() => window.location.reload(), 5 * 60 * 1000);  
             }
         })
         .catch(error=>{
@@ -126,6 +124,9 @@ class App extends React.Component {
     const slotsAvailable = 
     <div>
     <h1>Slots Now Available</h1>
+    {this.state.apiData!==null && this.state.apiData.map(str=>
+      <p><small>{str}</small></p>
+    )}
     <p>Visit <a className ="App-link" href="https://selfregistration.cowin.gov.in">https://selfregistration.cowin.gov.in</a></p>
     </div>
 
