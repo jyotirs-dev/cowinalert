@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-This project is kive at https://cowin-alert-mds.netlify.app/
+This project is live at https://cowin-alert-mds.netlify.app/
 
 ## Available Scripts
 
