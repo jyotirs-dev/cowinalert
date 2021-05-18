@@ -9,36 +9,62 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      apiData: null,
+      apiData: [],
       available:false,
-      error:false     
+      error:false,     
   }
   }
 
   componentDidMount(){
     const DateVar = this.getTomorrowDate();
     console.log("test1",DateVar);
+    // this.sendTelegramTest();
     this.getSlotsForDate(DateVar);
-    this.interval = setInterval(() => this.getSlotsForDate(DateVar), 60 * 1000);
+    this.interval = setInterval(() => this.getSlotsForDate(DateVar), 5 * 1000);
+  }
+
+  createMsg = (arrmsg)=>{
+    let str = "";
+    arrmsg.forEach((msg)=>{
+      str += `• ${msg}\n`
+    });
+    const header = "*⭐Vaccine Alert Mandsaur City⭐*\n\n"
+    const helpLink = `Visit https://selfregistration.cowin.gov.in`;
+    const msgstrnew = encodeURI(header + str + "\n" + helpLink);
+    return msgstrnew;
+  } 
+
+  sendTelegram = async (strarr)=>{
+    const sendMessage= (i,params)=>{
+      setTimeout(()=> { return axios(params); }, 500*i);
+    }
+    let i,temp,chunk = 4;
+      for(i=0; i<strarr.length; i+=chunk){
+        temp = strarr.slice(i,i+chunk);
+        const msgstrnew = this.createMsg(temp);
+        let config = {
+          method: 'get',
+          url: process.env.REACT_APP_SEND_MSG + msgstrnew + "&parse_mode=markdown"
+        };
+        sendMessage(i,config);
+        // axios(confignew)
+        // .then( (res)=> {
+        //   console.log(res);
+        // })
+        // .catch(error=>{
+        //     console.log(error);
+        // });
+      }
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
-  sendTelegram = async (strarr)=>{
-  
-    const helpLink = (`%0AVisit https://selfregistration.cowin.gov.in`);
-    const sendMessageNew = (i,params)=>{
-      setTimeout(()=> { return axios(params); }, 2000*i);
-    }
-    for(let i=0; i< strarr.length;i++) {
-      let config = {
-        method: 'get',
-        url: process.env.REACT_APP_SEND_MSG + strarr[i] + helpLink
-      };
-      sendMessageNew(i,config)
-  }
+  checkNewSlot = (arrmsg)=>{
+    const newStringAdded = !(JSON.stringify(this.state.apiData) === JSON.stringify(arrmsg));
+    // const lengthChanged = !(this.state.apiData.length === arrmsg.length);
+    return newStringAdded;
   }
 
   updateState = (arrmsg)=>{
@@ -91,22 +117,34 @@ class App extends React.Component {
                   // var sessionId = session["session_id"];
                   
                   if(age === 18 && avail > 0){
-                      console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
-                      let strMsg = `${avail} vaccine available for age ${age}-44 at ${name} on ${date}
-                      PinCode: ${pincode}`;
+                      // console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
+                      let strMsg = `${avail} vaccine available for age ${age}-44 at ${name} on ${date}. \nPinCode: ${pincode}\n`;
                       arrmsg.push(strMsg);
                     }
                 }
               }
 
-          const sessions = centers.map(centre=>centre.sessions).flat();
-          let validSlots = sessions.filter(session=> session.min_age_limit===18 && session.available_capacity>0)
-          console.log("checking",validSlots);
-            if(validSlots.length > 0) {
-                this.sendTelegram(arrmsg);
+          if(this.state.error){
+            this.setState(state => ({
+              error: false,
+            }));
+          }
+          console.log("checking",arrmsg);
+          if(arrmsg.length > 0) {
+            const newSlotAvailable = this.checkNewSlot(arrmsg);
+              if(newSlotAvailable){
                 this.updateState(arrmsg);
-                clearInterval(this.interval);
-                setTimeout(() => window.location.reload(), 5 * 60 * 1000);  
+                this.sendTelegram(arrmsg);
+                
+              }
+              // clearInterval(this.interval);
+              // setTimeout(() => window.location.reload(), 5 * 60 * 1000);  
+          }else if(this.state.apiData.length>0){
+              this.setState(state => ({
+                apiData: [],
+                available:false,
+                error: false,
+              }));
             }
         })
         .catch(error=>{
@@ -124,7 +162,7 @@ class App extends React.Component {
     const slotsAvailable = 
     <div>
     <h1>Slots Now Available</h1>
-    {this.state.apiData!==null && this.state.apiData.map(str=>
+    {this.state.apiData.length>0 && this.state.apiData.map(str=>
       <p><small>{str}</small></p>
     )}
     <p>Visit <a className ="App-link" href="https://selfregistration.cowin.gov.in">https://selfregistration.cowin.gov.in</a></p>
