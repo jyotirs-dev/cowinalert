@@ -113,12 +113,13 @@ class App extends React.Component {
                   var avail = session["available_capacity"];
                   var date  = session["date"];
                   var age = session["min_age_limit"];
+                  var vaccine = session["vaccine"];
                   // var slot = session["slots"][0];
                   // var sessionId = session["session_id"];
                   
                   if(age === 18 && avail > 0){
                       // console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
-                      let strMsg = `${avail} vaccine available for age ${age}-44 at ${name} on ${date}. \nPinCode: ${pincode}\n`;
+                      let strMsg = `${avail} ${vaccine} available for age ${age}-44 at ${name} on ${date}. \nPinCode: ${pincode}\n`;
                       arrmsg.push(strMsg);
                     }
                 }
