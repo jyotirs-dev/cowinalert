@@ -62,8 +62,10 @@ class App extends React.Component {
   }
 
   checkNewSlot = (arrmsg)=>{
-    const newStringAdded = !(JSON.stringify(this.state.apiData) === JSON.stringify(arrmsg));
-    // const lengthChanged = !(this.state.apiData.length === arrmsg.length);
+    const equals = (a, b) =>
+      a.length === b.length &&
+      a.every((v, i) => v === b[i]);
+    const newStringAdded = !(equals(this.state.apiData,arrmsg));
     return newStringAdded;
   }
 
@@ -102,24 +104,29 @@ class App extends React.Component {
 
     await axios(config)
         .then( (slots)=> {
-          const arrmsg = [];
+          let arrmsg = [];
           const centers = slots.data.centers;
-            for(var i in centers){
-              var centerData = centers[i];
-              var name =  centerData["name"];
-              var pincode = centerData["pincode"];
-              for(var j in centerData["sessions"]){
-                  var session = centerData["sessions"][j];
-                  var avail = session["available_capacity"];
-                  var date  = session["date"];
-                  var age = session["min_age_limit"];
-                  var vaccine = session["vaccine"];
+          
+            for(let i=0; i<centers.length; i++){
+              let centerData = centers[i];
+              let name =  centerData["name"];
+              let pincode = centerData["pincode"];
+              let sessions = centerData["sessions"];
+              for(let j=0; j<sessions.length; j++){
+                  let session = sessions[j];
+                  let avail = session["available_capacity"];
+                  let date  = session["date"];
+                  let age = session["min_age_limit"];
+                  let vaccine = session["vaccine"];
+                  let dose1 = session["available_capacity_dose1"];
+                  let dose2 = session["available_capacity_dose2"];
                   // var slot = session["slots"][0];
                   // var sessionId = session["session_id"];
                   
                   if(age === 18 && avail > 0){
+                      console.log("checking",session);
                       // console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
-                      let strMsg = `${avail} ${vaccine} available for age ${age}-44 at ${name} on ${date}. \nPinCode: ${pincode}\n`;
+                      let strMsg = `${avail} ${vaccine} available for age ${age}-44 at ${name} on ${date}.\n(Dose 1: ${dose1}, Dose 2: ${dose2})\nPinCode: ${pincode}\n`;
                       arrmsg.push(strMsg);
                     }
                 }
@@ -130,7 +137,7 @@ class App extends React.Component {
               error: false,
             }));
           }
-          console.log("checking",arrmsg);
+          // console.log("checking",arrmsg);
           if(arrmsg.length > 0) {
             const newSlotAvailable = this.checkNewSlot(arrmsg);
               if(newSlotAvailable){
@@ -163,8 +170,8 @@ class App extends React.Component {
     const slotsAvailable = 
     <div>
     <h1>Slots Now Available</h1>
-    {this.state.apiData.length>0 && this.state.apiData.map(str=>
-      <p><small>{str}</small></p>
+    {this.state.apiData.length>0 && this.state.apiData.map((str,idx)=>
+      <p key={idx}><small>{str}</small></p>
     )}
     <p>Visit <a className ="App-link" href="https://selfregistration.cowin.gov.in">https://selfregistration.cowin.gov.in</a></p>
     </div>
