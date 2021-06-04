@@ -28,7 +28,7 @@ class App extends React.Component {
     arrmsg.forEach((msg)=>{
       str += `• ${msg}\n`
     });
-    const header = "*⭐Vaccine Alert Mandsaur City⭐*\n\n"
+    const header = "*⭐D2 Vaccine Alert Indore City⭐*\n\n"
     const helpLink = `Visit https://selfregistration.cowin.gov.in`;
     const msgstrnew = encodeURI(header + str + "\n" + helpLink);
     return msgstrnew;
@@ -96,7 +96,7 @@ class App extends React.Component {
   getSlotsForDate = async (DATE)=> {
     let config = {
         method: 'get',
-        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=319&date='+DATE,
+        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=314&date='+DATE,
         headers: {
             'accept': 'application/json'
         }
@@ -123,7 +123,7 @@ class App extends React.Component {
                   // var slot = session["slots"][0];
                   // var sessionId = session["session_id"];
                   
-                  if(age === 18 && avail > 0){
+                  if(age === 18 && dose2 > 0  && vaccine == "COVAXIN"){
                       console.log("checking",session);
                       // console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
                       let strMsg = `${avail} ${vaccine} available for age ${age}-44 at ${name} on ${date}.\n(Dose 1: ${dose1}, Dose 2: ${dose2})\nPinCode: ${pincode}\n`;
@@ -189,7 +189,7 @@ class App extends React.Component {
       
       <div style={{height:viewHeight}} className="App">
         <header className="App-header">
-          Mandsaur city Cowin 18+ vaccination slots availability check.
+          Indore city Cowin 18+ D2 vaccination slots availability check.
         </header>
         <div className="App-body">
           {!this.state.error && (this.state.available? slotsAvailable : slotsUnAvailable)}
