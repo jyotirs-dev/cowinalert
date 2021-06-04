@@ -123,7 +123,7 @@ class App extends React.Component {
                   // var slot = session["slots"][0];
                   // var sessionId = session["session_id"];
                   
-                  if(age === 18 && dose2 > 0  && vaccine == "COVAXIN"){
+                  if(age === 18 && dose2 > 0  && vaccine === "COVAXIN"){
                       console.log("checking",session);
                       // console.log(`${avail} vaccine available for age ${age}-44 at ${name} on ${date}`);
                       let strMsg = `${avail} ${vaccine} available for age ${age}-44 at ${name} on ${date}.\n(Dose 1: ${dose1}, Dose 2: ${dose2})\nPinCode: ${pincode}\n`;
